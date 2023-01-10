@@ -1,45 +1,39 @@
 #!/bin/bash
+shopt -s globstar
 
-PASTA_PRINCIPAL_DRIVE=''
+PASTA_PRINCIPAL_DRIVE='1SXAEqbRvBKdOK9rWAHNupxnDyFSmCyqv'
 
 figlet -c  'INICIANDO BACKUP'
-
 
 DATA_HOJE=$(date '+%d-%m-%Y');
 
 echo -e  "Criando pasta no Google Drive";
 
 pastaDrive=$(sudo drive folder  --title  $DATA_HOJE  --parent  $PASTA_PRINCIPAL_DRIVE)
- 
-arrIN=(${pastaDrive//:/ })
-pastaUpload=${arrIN[1]} 
 
+arrIN=(${pastaDrive//:/ })
+
+pastaUpload=${arrIN[1]} 
 
 echo -e  "Pasta  $pastaUpload criada \n";
 
+DIRETORIOS=(**/)
 
-MEU_ARRAY=(ls *)
+for diretorio in "${DIRETORIOS[@]}"; do
+    if [ -d  ${diretorio} ]; then
+        echo -e "zipando ${diretorio}\n"
+        if [ -f "${diretorio}.zip" ]; then
+            echo -e "${diretorio}.zip already exists, skipping"
+        else
+            sudo  zip -r "${diretorio}.zip" ${diretorio}
+            echo -e "enviando ${diretorio}.zip para Google drive\n";
+            sudo  drive upload  --file  "${diretorio}.zip" --parent  $pastaUpload
+            echo -e "removendo ${diretorio}.zip\n"
+            sudo rm  -r  "${diretorio}.zip"
+        fi
+    else 
+        echo "Not found ${diretorio}\n"; 
+    fi
+done;
 
-
-for I in ${MEU_ARRAY[*]}; do
-    
-    if [ -d  ${I} ]; then 
-    
-      echo -e "zipando ${I}\n"
-      sudo  zip -r "${I}.zip" ${I}
-    
-       echo -e "enviando ${I}.zip para Google drive\n";
-       sudo  drive upload  --file  "${I}.zip" --parent  $pastaUpload
-
-         echo -e "removendo ${I}.zip\n"
-         sudo rm  -r  "${I}.zip"
- 
- 
- else echo "Not found ${I}\n"; fi
-     
- done ; 
-
- 
 figlet -c  'FIM'
-
-
