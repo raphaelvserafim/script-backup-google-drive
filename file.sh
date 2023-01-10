@@ -1,7 +1,7 @@
 #!/bin/bash
 shopt -s globstar
 
-PASTA_PRINCIPAL_DRIVE='1SXAEqbRvBKdOK9rWAHNupxnDyFSmCyqv'
+PASTA_PRINCIPAL_DRIVE= ''
 
 figlet -c  'INICIANDO BACKUP'
 
